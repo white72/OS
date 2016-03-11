@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	if (argc < 3) {
-		printf("\nJuż? To Wszystko? O.o Postaraj sie bardzij i podaj mi drugi parametr\n\n");
+		printf("\nJuż? To Wszystko? O.o Postaraj sie bardzij i podaj mi drugi parametr!\n\n");
 		return 1;
 	}
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	while((lbajt = read(source, buf, MAX)) > 0) {
+	if((lbajt = read(source, buf, MAX)) > 0) {
 		char temp[4];
 		for (int i = 0; i < 4; i++) temp[i] = buf[i+15];
 
@@ -44,12 +44,14 @@ int main(int argc, char *argv[]){
 		else{
 			printf("Podana wartosc jest liczba!\n\n\n");
 
-			for(int i = 0; i < liczbaElementow; i++) temp[i] = (rand()%10) + 48;
+			for(int i = 0; i < liczbaElementow; i++) {
+				buf[15+i] = (rand()%10) + 48;
+			}
 
-			target = open(argv[2], O_RDWR | O_CREAT/*| S_IRWXU*/);
+			target = open(argv[2], O_RDWR | O_CREAT);
 			
 			int ss;
-			if (ss = (write(target, temp, sizeof(temp))) == -1){
+			if (ss = (write(target, buf, lbajt)) == -1){
 				printf("Error przy zapisywaniu [%i]\n", ss);
 				return 1;
 			}
