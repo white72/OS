@@ -6,7 +6,7 @@
 #include <time.h>
 
 /*	- Pliki źródłowe w C najlepiej kompilować poleceniem:
-*		gcc -O2 -W -Wall -pedantic -std=c99 -o main.o mainc
+*		gcc -O2 -W -Wall -pedantic -std=c99 -o main.o main.c
 *		zapobiega to błędowi kompilacji "outside C99 mode"
 *		i włącza ostrzeżenia widoczne w terminalu.
 **/
