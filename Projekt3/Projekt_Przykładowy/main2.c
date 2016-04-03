@@ -6,9 +6,7 @@ int main(){
 
 	pid = fork();
 
-	if (pid){
-		puts("Jestem potomkiem");
-	}
+	if (pid) puts("Jestem potomkiem");
 	else {
 		wait(NULL);
 		puts("Nie jestem potomkiem");
