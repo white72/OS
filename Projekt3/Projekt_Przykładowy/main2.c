@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <sys/types.h>
 
 int main(){
 	pid_t pid;
@@ -6,7 +7,7 @@ int main(){
 
 	pid = fork();
 
-	if (pid) puts("Jestem potomkiem");
+	if (!pid) puts("Jestem potomkiem");
 	else {
 		wait(NULL);
 		puts("Nie jestem potomkiem");
