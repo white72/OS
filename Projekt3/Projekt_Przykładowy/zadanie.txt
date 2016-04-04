@@ -1,0 +1,3 @@
+Treœæ: Utwórz dwa procesy. Jeden z nich wczyta linijki z podanego pliku (argv[0]) i wyœle te zawieraj¹ce tylko cyfry do drugiego procesu. Drugi proces odbierze dane wys³ane z pierwszego procesu, znajdzie wœród nich liczby pierwsze i zapisze je do pliku posortowane (quick sort).
+
+Elementy do wykorzystania: tworzenie nowych procesów, wymiana danych przez potoki, nadawanie procesom priorytetu, odczyt/zapis buforowany, wykorzystanie malloc, realloc, free.
