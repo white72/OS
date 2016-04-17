@@ -1,0 +1,16 @@
+Zasada dzia³ania skryptu / pro.o / thr.o:
+
+./skrypt.sh [liczba 1] [liczba 2] [liczba 3] [liczba 4]
+
+Przyk³ad:
+
+./skrypt.sh 1 2 3 4
+./pro.o 5 6 7 8
+./thr.o 9 10 11 12
+
+
+ - Program przyjmuje parametry w zakresie od 0 do 18446744073709551615
+
+ - Najwiêksz± liczb± pierwsz± w tym zakresie jest 18446744073709551557
+
+ - Najwiêksza liczba pierwsza zostanie zapsiana do pliku output.txt
