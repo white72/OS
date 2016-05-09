@@ -5,7 +5,7 @@
 ##	[nazwa pliku] [właściciel] [typ pliku]
 ##	Na końcu wyświetl liczbę minut różnicy ich ostatniej modyfikacji.
 ##
-##	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=
+##	= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 ##
 ##	ls -t => sort by modyfication time, newset first
 ##	head -n 1 => pierwsza linijka
