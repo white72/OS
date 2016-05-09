@@ -23,7 +23,6 @@ do
 	currentFile=$(ls -t | sed -n "${n}p")
 	tar -rf $outputTar $currentFile
 	echo "tar -rf $outputTar $currentFile"
-	#echo "$(ls -t | sed -n "${n}p")"
 done
 
 cd $orginalDir
