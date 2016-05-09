@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ##
-##	Wyświetl najstarszy i najmłodszy plik z wybranego katalogu [$1]:
+##	Wyświetl najmłodszy i najstarszy plik z wybranego katalogu [$1]:
 ##	[nazwa pliku] [właściciel] [typ pliku]
 ##	Na końcu wyświetl liczbę minut różnicy ich ostatniej modyfikacji.
 ##
