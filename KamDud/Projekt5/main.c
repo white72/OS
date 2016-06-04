@@ -11,8 +11,10 @@
 #include <stdbool.h>
 
 #define TABLE_SIZE 16
-#define CHILD_STATUS_SHM_ID 727271
+#define CHILD_AND_PARENT_ARE_ALIVE 727270
+#define CHILD_MODE_SHM_ID 727271
 #define MAIN_SHM_ID 727272
+
 #define OFF 0
 #define ON 1
 
@@ -28,6 +30,11 @@ void initFBB(struct fiveBytesBox *fbb) {
     fbb->counter = 0;
 }
 
+bool isRunning(pid_t p) {
+    if (!kill(p, 0)) return true;
+    else return false;
+}
+
 void addToFBB(struct fiveBytesBox *fbb, char c) {
     fbb->buffer[fbb->counter % 5] = c;
     fbb->counter++;
@@ -38,9 +45,7 @@ void addToFBB(struct fiveBytesBox *fbb, char c) {
 bool isFiveIdenticalBytes(struct fiveBytesBox *fbb) {
     if (!fbb->varIsReady) return false;
 
-    for (int i = 1; i < 5; i++) {
-        if (fbb->buffer[0] != fbb->buffer[i]) return false;
-    }
+    for (int i = 1; i < 5; i++) if (fbb->buffer[0] != fbb->buffer[i]) return false;
 
     return true;
 }
@@ -72,8 +77,9 @@ int main() {
 
     pid_t pid = fork();
     if (!pid) { //Child
+        pid_t ppid = getppid();
         int mainShmId = shmget(MAIN_SHM_ID, TABLE_SIZE, IPC_CREAT | 0644), childStatusShmId = shmget(
-                CHILD_STATUS_SHM_ID, sizeof(bool), IPC_CREAT | 0644);
+                CHILD_MODE_SHM_ID, sizeof(bool), IPC_CREAT | 0644);
 
         if (mainShmId == -1 || childStatusShmId == -1) {
             printf("Child process shmid error\n");
@@ -81,28 +87,28 @@ int main() {
         }
 
         int *mainBuff = (int *) shmat(mainShmId, NULL, 0);
-        bool *statusBuff = (bool *) shmat(childStatusShmId, NULL, 0);
+        bool *childModeBuff = (bool *) shmat(childStatusShmId, NULL, 0); childModeBuff[0] = ON;
 
-        if (mainBuff == NULL || statusBuff == NULL) {
+        if (mainBuff == NULL || childModeBuff == NULL) {
             printf("Child process NULL BUF ERROR\n");
             _exit(1);
         }
 
-        for (int i = 0; statusBuff[0] == ON; i++) mainBuff[i % TABLE_SIZE] = (char) rand() % 256; // Zapisywanie losowego bajtu, jeśli childStatus == ON
+        for (int i = 0; childModeBuff[0] && isRunning(ppid); i++) mainBuff[i % TABLE_SIZE] = (char) rand() % 256; // 256Zapisywanie losowego bajtu, jeśli childStatus == ON
 
         _exit(0);
     }
 
     int parentMainShmId = shmget(MAIN_SHM_ID, TABLE_SIZE, IPC_CREAT | 0644), parentChildStatusShmId = shmget(
-            CHILD_STATUS_SHM_ID, sizeof(bool), IPC_CREAT | 0644);
+            CHILD_MODE_SHM_ID, sizeof(bool), IPC_CREAT | 0644);
     if (parentMainShmId == -1 || parentChildStatusShmId == -1) printf("Parent shmget ERROR\n");
 
     int *parentMainBuff = (int *) shmat(parentMainShmId, NULL, 0);
-    bool *parentChildStatusBuff = (bool *) shmat(parentChildStatusShmId, NULL, 0);
-    if (parentMainBuff == NULL || parentChildStatusBuff == NULL) printf("Parent shmat ERROR\n");
+    bool *parentChildModeBuff = (bool *) shmat(parentChildStatusShmId, NULL, 0);
 
+    if (parentMainBuff == NULL || parentChildModeBuff == NULL) printf("Parent shmat ERROR\n");
 
-    parentChildStatusBuff[0] = true;
+    parentChildModeBuff[0] = ON;
 
     struct fiveBytesBox *fiveBytesBox = malloc(sizeof(fiveBytesBox));
     initFBB(fiveBytesBox);
@@ -112,13 +118,15 @@ int main() {
         addToFBB(fiveBytesBox, parentMainBuff[i % TABLE_SIZE]); //Odczytywanie z SHM bajtu, zapis do FBB
 
         if (isFiveIdenticalBytes(fiveBytesBox)) { // Jeśli cała struktura FBB zawiera takie same bajty
+            printf("\n\nBINGO!!!\n");
+            printf(" Iteracja  | Bajt  \n");
             showFBB(fiveBytesBox);
-            printf("BINGOOO!!!\n");
-            parentChildStatusBuff[0] = OFF;
+
+            parentChildModeBuff[0] = OFF;
             break;
         }
+
     }
 
-    wait(NULL);
     return 0;
 }
