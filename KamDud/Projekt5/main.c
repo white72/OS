@@ -16,7 +16,7 @@
 #define OFF 0
 #define ON 1
 
-struct fiveBytesBox {
+struct fiveBytesBox { //Struktura do zapisu 5 bajtów
     char *buffer; // Bufor na 5 bajtów
     bool varIsReady; // Czy pierwsza kolejka 5 bajtów już dotarła
     unsigned long long counter; //Licznik otrzymanych bajtów
@@ -56,12 +56,11 @@ const char *byteToBinary(char c) {
     return b;
 }
 
-void showFBB(struct fiveBytesBox *fbb) {
+void showFBB(struct fiveBytesBox *fbb) { //Wybisanie zawartości struktury FBB
     if (!fbb->varIsReady) return;
 
     for (int i = 0; i < 5; i++) {
         char c = fbb->buffer[i];
-        //printf("[%d] %s\n", i, byteToBinary(c));
         printf("[%llu] %s\n", (unsigned long long) fbb->counter - 5 + i, byteToBinary(c));
     }
 
@@ -69,7 +68,7 @@ void showFBB(struct fiveBytesBox *fbb) {
 }
 
 int main() {
-    srand((unsigned int) time(NULL));
+    srand((unsigned int) time(NULL)); //seed
 
     pid_t pid = fork();
     if (!pid) { //Child
@@ -89,9 +88,7 @@ int main() {
             _exit(1);
         }
 
-        for (int i = 0; statusBuff[0] == ON; i++) {
-            mainBuff[i % TABLE_SIZE] = (char) rand() % 256;
-        }
+        for (int i = 0; statusBuff[0] == ON; i++) mainBuff[i % TABLE_SIZE] = (char) rand() % 256; // Zapisywanie losowego bajtu, jeśli childStatus == ON
 
         _exit(0);
     }
@@ -112,9 +109,9 @@ int main() {
 
     for (int i = 0; true; i++) {
 
-        addToFBB(fiveBytesBox, parentMainBuff[i % TABLE_SIZE]);
+        addToFBB(fiveBytesBox, parentMainBuff[i % TABLE_SIZE]); //Odczytywanie z SHM bajtu, zapis do FBB
 
-        if (isFiveIdenticalBytes(fiveBytesBox)) {
+        if (isFiveIdenticalBytes(fiveBytesBox)) { // Jeśli cała struktura FBB zawiera takie same bajty
             showFBB(fiveBytesBox);
             printf("BINGOOO!!!\n");
             parentChildStatusBuff[0] = OFF;
